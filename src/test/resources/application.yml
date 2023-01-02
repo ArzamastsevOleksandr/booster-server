@@ -1,0 +1,14 @@
+# todo: why is test .yml file not derived from the PROD .yml file
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:14.1-alpine:///postgres
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+logging:
+  level:
+    com.booster.server: DEBUG
