@@ -1,1 +1,18 @@
+server:
+  port: 8081
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5455/postgres
+    username: root
+    password: pass
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+#    todo: find a better way of logging SQL
+    show-sql: true
+
+logging:
+  level:
+    com.booster.server: DEBUG
