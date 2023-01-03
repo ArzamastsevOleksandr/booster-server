@@ -1,6 +1,5 @@
 package com.booster.server;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -19,7 +18,6 @@ public class NoteEntity {
 
     @Id
     @GeneratedValue
-    @EqualsAndHashCode.Include
     private Long id;
 
     private String content;

@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/note")
 @RequiredArgsConstructor
-public class NoteController {
+class NoteController {
 
     private final NoteService noteService;
 

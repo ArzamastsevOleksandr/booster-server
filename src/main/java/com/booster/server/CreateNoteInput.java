@@ -8,5 +8,5 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 public class CreateNoteInput {
-    String content;
+    private String content;
 }
