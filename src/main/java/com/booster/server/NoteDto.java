@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 @ToString
-public class VocabularyEntryDto {
-    private String name;
-    private String description;
+public class NoteDto {
+    private String content;
 }
