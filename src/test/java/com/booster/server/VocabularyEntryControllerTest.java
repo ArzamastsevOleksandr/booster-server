@@ -27,6 +27,11 @@ class VocabularyEntryControllerTest {
     @Autowired
     VocabularyEntryRepository vocabularyEntryRepository;
 
+    String coalesce = "coalesce";
+    String coalesceDescription = "come together to form one mass or whole";
+    String robust = "robust";
+    String robustDescription = "strong and healthy; hardy; vigorous";
+
     @BeforeEach
     void beforeEach() {
         vocabularyEntryRepository.deleteAll();
@@ -35,9 +40,6 @@ class VocabularyEntryControllerTest {
     @Test
     void createNewVocabularyEntry() throws Exception {
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
-
-        String coalesce = "coalesce";
-        String coalesceDescription = "come together to form one mass or whole";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/vocabulary-entry")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +53,7 @@ class VocabularyEntryControllerTest {
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(1)
-                .extracting("coalesce", "coalesceDescription")
+                .extracting("name", "description")
                 .containsExactly(Tuple.tuple(coalesce, coalesceDescription));
     }
 
@@ -59,32 +61,29 @@ class VocabularyEntryControllerTest {
     void returnVocabularyEntryListOfPredefinedSize() throws Exception {
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
 
-        String robust = "robust";
-        String robustDescription = "strong and healthy; hardy; vigorous";
-        String stuck = "stuck";
-        String stuckDescription = "unable to move from a particular position or place, or unable to change a situation";
         Integer expectedSize = 2;
 
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                .setName(coalesce)
+                .setDescription(coalesceDescription));
+        vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setName(robust)
                 .setDescription(robustDescription));
-        vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(stuck)
-                .setDescription(stuckDescription));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(expectedSize))
-                .andExpect((jsonPath("$.[0].name").value(robust)))
-                .andExpect((jsonPath("$.[0].description").value(robustDescription)))
-                .andExpect((jsonPath("$.[1].name").value(stuck)))
-                .andExpect((jsonPath("$.[1].description").value(stuckDescription)));
+                .andExpect((jsonPath("$.[0].name").value(coalesce)))
+                .andExpect((jsonPath("$.[0].description").value(coalesceDescription)))
+                .andExpect((jsonPath("$.[1].name").value(robust)))
+                .andExpect((jsonPath("$.[1].description").value(robustDescription)));
+
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(expectedSize)
                 .extracting("name", "description")
-                .containsExactly(Tuple.tuple(robust, robustDescription), Tuple.tuple(stuck, stuckDescription));
+                .containsExactly(Tuple.tuple(coalesce, coalesceDescription), Tuple.tuple(robust, robustDescription));
     }
 
 }
