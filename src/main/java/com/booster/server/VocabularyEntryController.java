@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -26,13 +28,9 @@ class VocabularyEntryController {
     }
 
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
         // todo: add constraints
-    VocabularyEntryListDto list(@RequestParam Integer size) {
-        log.debug("Processing request [input={}]", size);
-        VocabularyEntryListDto list = vocabularyEntryService.list(size);
-        log.debug("List of vocabulary entry [dto={}]", list);
-        return list;
+    List<VocabularyEntryDto> list(@RequestParam Integer size) {
+        return vocabularyEntryService.list(size);
     }
 
 }

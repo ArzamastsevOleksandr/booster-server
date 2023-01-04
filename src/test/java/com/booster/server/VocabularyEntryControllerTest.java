@@ -61,33 +61,21 @@ class VocabularyEntryControllerTest {
         String secondDescription = "unable to move from a particular position or place, or unable to change a situation";
         Integer expectedSize = 2;
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/vocabulary-entry")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new CreateVocabularyEntryInput()
-                                .setName(firstName)
-                                .setDescription(firstDescription))))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(firstName))
-                .andExpect(jsonPath("$.description").value(firstDescription));
-        mockMvc.perform(MockMvcRequestBuilders.post("/vocabulary-entry")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new CreateVocabularyEntryInput()
-                                .setName(secondName)
-                                .setDescription(secondDescription))))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(secondName))
-                .andExpect(jsonPath("$.description").value(secondDescription));
+        vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                .setName(firstName)
+                .setDescription(firstDescription));
+        vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                .setName(secondName)
+                .setDescription(secondDescription));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.list.length()").value(expectedSize))
-                .andExpect((jsonPath("$.list[0].name").value(firstName)))
-                .andExpect((jsonPath("$.list[0].description").value(firstDescription)))
-                .andExpect((jsonPath("$.list[1].name").value(secondName)))
-                .andExpect((jsonPath("$.list[1].description").value(secondDescription)));
+                .andExpect(jsonPath("$.length()").value(expectedSize))
+                .andExpect((jsonPath("$.[0].name").value(firstName)))
+                .andExpect((jsonPath("$.[0].description").value(firstDescription)))
+                .andExpect((jsonPath("$.[1].name").value(secondName)))
+                .andExpect((jsonPath("$.[1].description").value(secondDescription)));
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(expectedSize)

@@ -19,21 +19,17 @@ public class VocabularyEntryService {
 
         vocabularyEntryEntity = vocabularyEntryRepository.save(vocabularyEntryEntity);
 
-        return getVocabularyEntryDto(vocabularyEntryEntity);
+        return vocabularyEntryDto(vocabularyEntryEntity);
     }
 
-    public VocabularyEntryListDto list(Integer size) {
-        List<VocabularyEntryDto> list = vocabularyEntryRepository.findAll()
+    public List<VocabularyEntryDto> list(Integer size) {
+        return vocabularyEntryRepository.findAllWithLimit(size)
                 .stream()
-                .limit(size)
-                .map(this::getVocabularyEntryDto)
+                .map(this::vocabularyEntryDto)
                 .collect(Collectors.toList());
-
-        return new VocabularyEntryListDto()
-                .setList(list);
     }
 
-    private VocabularyEntryDto getVocabularyEntryDto(VocabularyEntryEntity entity) {
+    private VocabularyEntryDto vocabularyEntryDto(VocabularyEntryEntity entity) {
         return new VocabularyEntryDto()
                 .setName(entity.getName())
                 .setDescription(entity.getDescription());
