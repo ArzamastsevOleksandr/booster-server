@@ -3,6 +3,9 @@ package com.booster.server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class VocabularyEntryService {
@@ -16,9 +19,20 @@ public class VocabularyEntryService {
 
         vocabularyEntryEntity = vocabularyEntryRepository.save(vocabularyEntryEntity);
 
+        return vocabularyEntryDto(vocabularyEntryEntity);
+    }
+
+    public List<VocabularyEntryDto> list(Integer size) {
+        return vocabularyEntryRepository.findAllWithLimit(size)
+                .stream()
+                .map(this::vocabularyEntryDto)
+                .collect(Collectors.toList());
+    }
+
+    private VocabularyEntryDto vocabularyEntryDto(VocabularyEntryEntity entity) {
         return new VocabularyEntryDto()
-                .setName(vocabularyEntryEntity.getName())
-                .setDescription(vocabularyEntryEntity.getDescription());
+                .setName(entity.getName())
+                .setDescription(entity.getDescription());
     }
 
 }

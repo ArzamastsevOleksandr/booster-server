@@ -2,6 +2,7 @@ package com.booster.server;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Setter
 @Getter
+@Accessors(chain = true)
 public class VocabularyEntryEntity {
 
     @Id
