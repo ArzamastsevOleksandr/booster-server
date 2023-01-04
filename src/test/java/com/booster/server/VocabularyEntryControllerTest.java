@@ -36,55 +36,55 @@ class VocabularyEntryControllerTest {
     void createNewVocabularyEntry() throws Exception {
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
 
-        String name = "coalesce";
-        String description = "come together to form one mass or whole";
+        String coalesce = "coalesce";
+        String coalesceDescription = "come together to form one mass or whole";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/vocabulary-entry")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new CreateVocabularyEntryInput()
-                                .setName(name)
-                                .setDescription(description))))
+                                .setName(coalesce)
+                                .setDescription(coalesceDescription))))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description));
+                .andExpect(jsonPath("$.name").value(coalesce))
+                .andExpect(jsonPath("$.description").value(coalesceDescription));
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(1)
-                .extracting("name", "description")
-                .containsExactly(Tuple.tuple(name, description));
+                .extracting("coalesce", "coalesceDescription")
+                .containsExactly(Tuple.tuple(coalesce, coalesceDescription));
     }
 
     @Test
     void returnVocabularyEntryListOfPredefinedSize() throws Exception {
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
 
-        String firstName = "robust";
-        String firstDescription = "strong and healthy; hardy; vigorous";
-        String secondName = "stuck";
-        String secondDescription = "unable to move from a particular position or place, or unable to change a situation";
+        String robust = "robust";
+        String robustDescription = "strong and healthy; hardy; vigorous";
+        String stuck = "stuck";
+        String stuckDescription = "unable to move from a particular position or place, or unable to change a situation";
         Integer expectedSize = 2;
 
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(firstName)
-                .setDescription(firstDescription));
+                .setName(robust)
+                .setDescription(robustDescription));
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(secondName)
-                .setDescription(secondDescription));
+                .setName(stuck)
+                .setDescription(stuckDescription));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(expectedSize))
-                .andExpect((jsonPath("$.[0].name").value(firstName)))
-                .andExpect((jsonPath("$.[0].description").value(firstDescription)))
-                .andExpect((jsonPath("$.[1].name").value(secondName)))
-                .andExpect((jsonPath("$.[1].description").value(secondDescription)));
+                .andExpect((jsonPath("$.[0].name").value(robust)))
+                .andExpect((jsonPath("$.[0].description").value(robustDescription)))
+                .andExpect((jsonPath("$.[1].name").value(stuck)))
+                .andExpect((jsonPath("$.[1].description").value(stuckDescription)));
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(expectedSize)
                 .extracting("name", "description")
-                .containsExactly(Tuple.tuple(firstName, firstDescription), Tuple.tuple(secondName, secondDescription));
+                .containsExactly(Tuple.tuple(robust, robustDescription), Tuple.tuple(stuck, stuckDescription));
     }
 
 }
