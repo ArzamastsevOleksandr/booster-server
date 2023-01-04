@@ -20,17 +20,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class VocabularyEntryControllerTest {
 
+    final String coalesce = "coalesce";
+    final String coalesceDescription = "come together to form one mass or whole";
+    final String robust = "robust";
+    final String robustDescription = "strong and healthy; hardy; vigorous";
+
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
     VocabularyEntryRepository vocabularyEntryRepository;
-
-    String coalesce = "coalesce";
-    String coalesceDescription = "come together to form one mass or whole";
-    String robust = "robust";
-    String robustDescription = "strong and healthy; hardy; vigorous";
 
     @BeforeEach
     void beforeEach() {
