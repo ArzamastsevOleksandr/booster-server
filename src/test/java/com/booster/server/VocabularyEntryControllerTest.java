@@ -2,6 +2,7 @@ package com.booster.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,8 +26,11 @@ class VocabularyEntryControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     VocabularyEntryRepository vocabularyEntryRepository;
-    @Autowired
-    VocabularyEntryService vocabularyEntryService;
+
+    @BeforeEach
+    void beforeEach() {
+        vocabularyEntryRepository.deleteAll();
+    }
 
     @Test
     void createNewVocabularyEntry() throws Exception {
