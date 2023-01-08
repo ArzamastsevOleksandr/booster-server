@@ -7,7 +7,9 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +24,8 @@ import java.util.Objects;
 public class VocabularyEntryEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "vocabulary_entry_id_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vocabulary_entry_id_sequence")
     private Long id;
 
     private String name;
