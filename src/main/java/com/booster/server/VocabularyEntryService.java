@@ -3,6 +3,9 @@ package com.booster.server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +19,7 @@ public class VocabularyEntryService {
         var vocabularyEntryEntity = new VocabularyEntryEntity();
         vocabularyEntryEntity.setName(input.getName());
         vocabularyEntryEntity.setDescription(input.getDescription());
+        vocabularyEntryEntity.setLastSeenAt(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
 
         vocabularyEntryEntity = vocabularyEntryRepository.save(vocabularyEntryEntity);
 
@@ -33,6 +37,14 @@ public class VocabularyEntryService {
         return new VocabularyEntryDto()
                 .setName(entity.getName())
                 .setDescription(entity.getDescription());
+    }
+
+    public void updateLastSeenAt(UpdateLastSeenAtInput input) {
+        List<VocabularyEntryEntity> updatedVocabularyEntries = vocabularyEntryRepository.findAllById(input.getIds())
+                .stream()
+                .peek(entry -> entry.setLastSeenAt(input.getLocalDateTime()))
+                .toList();
+        vocabularyEntryRepository.saveAll(updatedVocabularyEntries);
     }
 
 }

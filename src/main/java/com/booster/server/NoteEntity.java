@@ -2,18 +2,21 @@ package com.booster.server;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Table(name = "note")
 @Entity
 @Getter
 @Setter
+@Accessors(chain = true)
 public class NoteEntity {
 
     @Id
@@ -21,6 +24,7 @@ public class NoteEntity {
     private Long id;
 
     private String content;
+    private LocalDateTime lastSeenAt;
 
     @Override
     public boolean equals(Object o) {

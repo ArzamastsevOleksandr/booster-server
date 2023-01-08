@@ -11,6 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,6 +29,8 @@ class VocabularyEntryControllerTest {
     final String coalesceDescription = "come together to form one mass or whole";
     final String robust = "robust";
     final String robustDescription = "strong and healthy; hardy; vigorous";
+    final String contribution = "contribution";
+    final String contributionDescription = "the part played by a person or thing in bringing about a result or helping something to advance";
 
     @Autowired
     MockMvc mockMvc;
@@ -51,10 +58,16 @@ class VocabularyEntryControllerTest {
                 .andExpect(jsonPath("$.name").value(coalesce))
                 .andExpect(jsonPath("$.description").value(coalesceDescription));
 
-        assertThat(vocabularyEntryRepository.findAll())
+        List<VocabularyEntryEntity> vocabularyEntryEntities = vocabularyEntryRepository.findAll();
+        assertThat(vocabularyEntryEntities)
                 .hasSize(1)
                 .extracting("name", "description")
                 .containsExactly(Tuple.tuple(coalesce, coalesceDescription));
+        assertThat(vocabularyEntryEntities.stream()
+                .map(VocabularyEntryEntity::getLastSeenAt)
+                .toList())
+                .hasSize(1)
+                .containsOnly(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
     @Test
@@ -65,25 +78,63 @@ class VocabularyEntryControllerTest {
 
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setName(coalesce)
-                .setDescription(coalesceDescription));
+                .setDescription(coalesceDescription)
+                .setLastSeenAt(LocalDateTime.now()));
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setName(robust)
-                .setDescription(robustDescription));
+                .setDescription(robustDescription)
+                .setLastSeenAt(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(expectedSize))
-                .andExpect((jsonPath("$.[0].name").value(coalesce)))
-                .andExpect((jsonPath("$.[0].description").value(coalesceDescription)))
-                .andExpect((jsonPath("$.[1].name").value(robust)))
-                .andExpect((jsonPath("$.[1].description").value(robustDescription)));
-
+                .andExpect((jsonPath("$.[0].name").value(robust)))
+                .andExpect((jsonPath("$.[0].description").value(robustDescription)))
+                .andExpect((jsonPath("$.[1].name").value(coalesce)))
+                .andExpect((jsonPath("$.[1].description").value(coalesceDescription)));
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(expectedSize)
                 .extracting("name", "description")
                 .containsExactly(Tuple.tuple(coalesce, coalesceDescription), Tuple.tuple(robust, robustDescription));
+    }
+
+    @Test
+    void correctUpdateOfLastSeenAtPropertyOfVocabularyEntry() throws Exception {
+        assertThat(vocabularyEntryRepository.findAll()).isEmpty();
+
+        LocalDateTime initDateTime = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
+        Long id1 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                        .setName(coalesce)
+                        .setDescription(coalesceDescription)
+                        .setLastSeenAt(initDateTime))
+                .getId();
+        Long id2 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                        .setName(robust)
+                        .setDescription(robustDescription)
+                        .setLastSeenAt(initDateTime))
+                .getId();
+        vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                .setName(contribution)
+                .setDescription(contributionDescription)
+                .setLastSeenAt(initDateTime));
+
+        LocalDateTime updateDateTime = LocalDateTime.now();
+        List<Long> ids = List.of(id1, id2);
+        mockMvc.perform(MockMvcRequestBuilders.patch("/vocabulary-entry")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new UpdateLastSeenAtInput()
+                                .setIds(ids)
+                                .setLocalDateTime(updateDateTime))))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        assertThat(vocabularyEntryRepository.findAllById(ids)
+                .stream()
+                .map(VocabularyEntryEntity::getLastSeenAt)
+                .toList())
+                .containsOnly(updateDateTime);
     }
 
 }
