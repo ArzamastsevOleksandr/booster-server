@@ -9,6 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Table(name = "vocabulary_entry")
@@ -24,6 +27,7 @@ public class VocabularyEntryEntity {
 
     private String name;
     private String description;
+    private LocalDateTime lastSeenAt = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
 
     @Override
     public boolean equals(Object o) {

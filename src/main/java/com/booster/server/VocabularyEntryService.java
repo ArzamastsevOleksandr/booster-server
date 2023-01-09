@@ -23,7 +23,7 @@ public class VocabularyEntryService {
     }
 
     public List<VocabularyEntryDto> list(Integer size) {
-        return vocabularyEntryRepository.findAllWithLimit(size)
+        return vocabularyEntryRepository.findBatch(size)
                 .stream()
                 .map(this::vocabularyEntryDto)
                 .collect(Collectors.toList());
@@ -33,6 +33,12 @@ public class VocabularyEntryService {
         return new VocabularyEntryDto()
                 .setName(entity.getName())
                 .setDescription(entity.getDescription());
+    }
+
+    public void updateLastSeenAt(UpdateLastSeenAtInput input) {
+        List<VocabularyEntryEntity> vocabularyEntries = vocabularyEntryRepository.findAllById(input.getIds());
+        vocabularyEntries.forEach(entry -> entry.setLastSeenAt(input.getLastSeenAt()));
+        vocabularyEntryRepository.saveAll(vocabularyEntries);
     }
 
 }

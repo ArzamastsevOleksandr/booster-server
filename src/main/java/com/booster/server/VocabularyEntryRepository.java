@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT * FROM vocabulary_entry ve LIMIT :size")
-    List<VocabularyEntryEntity> findAllWithLimit(Integer size);
+    @Query(nativeQuery = true, value = "SELECT * FROM vocabulary_entry ve ORDER BY ve.last_seen_at ASC LIMIT :size")
+    List<VocabularyEntryEntity> findBatch(Integer size);
 
 }

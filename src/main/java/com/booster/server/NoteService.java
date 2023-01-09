@@ -3,6 +3,8 @@ package com.booster.server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NoteService {
@@ -17,6 +19,12 @@ public class NoteService {
 
         return new NoteDto()
                 .setContent(noteEntity.getContent());
+    }
+
+    public void updateLastSeenAt(UpdateLastSeenAtInput input) {
+        List<NoteEntity> notes = noteRepository.findAllById(input.getIds());
+        notes.forEach(note -> note.setLastSeenAt(input.getLastSeenAt()));
+        noteRepository.saveAll(notes);
     }
 
 }

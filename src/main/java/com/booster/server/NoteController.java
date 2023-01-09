@@ -25,4 +25,12 @@ class NoteController {
         return noteDto;
     }
 
+    @PatchMapping(produces = APPLICATION_JSON_VALUE)
+        // todo: add constraints
+    void updateLastSeenAt(@RequestBody UpdateLastSeenAtInput input) {
+        log.debug("Processing request [input={}]", input);
+        noteService.updateLastSeenAt(input);
+        log.debug("Request processed [input={}]", input);
+    }
+
 }
