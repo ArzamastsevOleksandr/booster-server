@@ -59,14 +59,10 @@ class VocabularyEntryControllerTest {
                 .andExpect(jsonPath("$.name").value(coalesce))
                 .andExpect(jsonPath("$.description").value(coalesceDescription));
 
-        List<VocabularyEntryEntity> vocabularyEntryEntities = vocabularyEntryRepository.findAll();
-        assertThat(vocabularyEntryEntities)
+        assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(1)
-                .extracting("name", "description")
-                .containsExactly(Tuple.tuple(coalesce, coalesceDescription));
-        assertTrue(vocabularyEntryEntities
-                .stream()
-                .allMatch(n -> n.getLastSeenAt().equals(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN))));
+                .extracting("name", "description", "lastSeenAt")
+                .containsExactly(Tuple.tuple(coalesce, coalesceDescription, LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
     }
 
     @Test

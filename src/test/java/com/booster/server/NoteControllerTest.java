@@ -1,6 +1,7 @@
 package com.booster.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +55,8 @@ class NoteControllerTest {
 
         assertThat(noteRepository.findAll())
                 .hasSize(1)
-                .extracting("content")
-                .containsExactly(firstNoteContent);
-        assertTrue(noteRepository.findAll()
-                .stream()
-                .allMatch(n -> n.getLastSeenAt().equals(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN))));
+                .extracting("content", "lastSeenAt")
+                .containsExactly(Tuple.tuple(firstNoteContent, LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
     }
 
     @Test
