@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,9 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class NoteControllerTest {
 
-    final String firstNote = "My first note";
-    final String secondNote = "Read 10 pages";
-    final String thirdNote = "Practice piano";
+    final String firstNoteContent = "My first note";
+    final String secondNoteContent = "Read 10 pages";
+    final String thirdNoteContent = "Practice piano";
 
     @Autowired
     MockMvc mockMvc;
@@ -46,49 +47,50 @@ class NoteControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/note")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(new CreateNoteInput().setContent(firstNote))))
+                        .content(objectMapper.writeValueAsString(new CreateNoteInput().setContent(firstNoteContent))))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value(firstNote));
+                .andExpect(jsonPath("$.content").value(firstNoteContent));
 
         assertThat(noteRepository.findAll())
                 .hasSize(1)
                 .extracting("content")
-                .containsExactly(firstNote);
+                .containsExactly(firstNoteContent);
+        assertTrue(noteRepository.findAll()
+                .stream()
+                .allMatch(n -> n.getLastSeenAt().equals(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN))));
     }
 
     @Test
-    void correctUpdateOfLastSeenAtPropertyOfVocabularyEntry() throws Exception {
+    void correctUpdateOfLastSeenAtPropertyOfNote() throws Exception {
         assertThat(noteRepository.findAll()).isEmpty();
 
-        LocalDateTime initDateTime = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
         Long id1 = noteRepository.save(new NoteEntity()
-                        .setContent(firstNote)
-                        .setLastSeenAt(initDateTime))
+                        .setContent(firstNoteContent))
                 .getId();
-        noteRepository.save(new NoteEntity()
-                .setContent(secondNote)
-                .setLastSeenAt(initDateTime));
+        Long id2 = noteRepository.save(new NoteEntity()
+                        .setContent(secondNoteContent))
+                .getId();
         Long id3 = noteRepository.save(new NoteEntity()
-                        .setContent(thirdNote)
-                        .setLastSeenAt(initDateTime))
+                        .setContent(thirdNoteContent))
                 .getId();
 
-        LocalDateTime updateDateTime = LocalDateTime.now();
+        LocalDateTime lastSeenAt = LocalDateTime.now();
         List<Long> ids = List.of(id1, id3);
         mockMvc.perform(MockMvcRequestBuilders.patch("/note")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new UpdateLastSeenAtInput()
                                 .setIds(ids)
-                                .setLocalDateTime(updateDateTime))))
+                                .setLastSeenAt(lastSeenAt))))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertThat(noteRepository.findAllById(ids)
+        assertTrue(noteRepository.findAllById(ids)
                 .stream()
-                .map(NoteEntity::getLastSeenAt)
-                .toList())
-                .containsOnly(updateDateTime);
+                .allMatch(n -> n.getLastSeenAt().equals(lastSeenAt)));
+        assertThat(noteRepository.findById(id2)
+                .map(NoteEntity::getLastSeenAt).get())
+                .isEqualTo(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
 }

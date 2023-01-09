@@ -9,7 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Table(name = "note")
@@ -24,7 +26,7 @@ public class NoteEntity {
     private Long id;
 
     private String content;
-    private LocalDateTime lastSeenAt;
+    private LocalDateTime lastSeenAt = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
 
     @Override
     public boolean equals(Object o) {

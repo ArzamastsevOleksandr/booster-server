@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,11 +64,9 @@ class VocabularyEntryControllerTest {
                 .hasSize(1)
                 .extracting("name", "description")
                 .containsExactly(Tuple.tuple(coalesce, coalesceDescription));
-        assertThat(vocabularyEntryEntities.stream()
-                .map(VocabularyEntryEntity::getLastSeenAt)
-                .toList())
-                .hasSize(1)
-                .containsOnly(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
+        assertTrue(vocabularyEntryEntities
+                .stream()
+                .allMatch(n -> n.getLastSeenAt().equals(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN))));
     }
 
     @Test
@@ -104,37 +103,35 @@ class VocabularyEntryControllerTest {
     void correctUpdateOfLastSeenAtPropertyOfVocabularyEntry() throws Exception {
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
 
-        LocalDateTime initDateTime = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
         Long id1 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
                         .setName(coalesce)
-                        .setDescription(coalesceDescription)
-                        .setLastSeenAt(initDateTime))
+                        .setDescription(coalesceDescription))
                 .getId();
         Long id2 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
                         .setName(robust)
-                        .setDescription(robustDescription)
-                        .setLastSeenAt(initDateTime))
+                        .setDescription(robustDescription))
                 .getId();
-        vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(contribution)
-                .setDescription(contributionDescription)
-                .setLastSeenAt(initDateTime));
+        Long id3 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                        .setName(contribution)
+                        .setDescription(contributionDescription))
+                .getId();
 
-        LocalDateTime updateDateTime = LocalDateTime.now();
+        LocalDateTime lastSeenAt = LocalDateTime.now();
         List<Long> ids = List.of(id1, id2);
         mockMvc.perform(MockMvcRequestBuilders.patch("/vocabulary-entry")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new UpdateLastSeenAtInput()
                                 .setIds(ids)
-                                .setLocalDateTime(updateDateTime))))
+                                .setLastSeenAt(lastSeenAt))))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertThat(vocabularyEntryRepository.findAllById(ids)
+        assertTrue(vocabularyEntryRepository.findAllById(ids)
                 .stream()
-                .map(VocabularyEntryEntity::getLastSeenAt)
-                .toList())
-                .containsOnly(updateDateTime);
+                .allMatch(n -> n.getLastSeenAt().equals(lastSeenAt)));
+        assertThat(vocabularyEntryRepository.findById(id3)
+                .map(VocabularyEntryEntity::getLastSeenAt).get())
+                .isEqualTo(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
 }

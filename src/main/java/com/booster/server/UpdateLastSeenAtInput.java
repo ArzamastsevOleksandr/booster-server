@@ -12,5 +12,5 @@ import java.util.List;
 @Accessors(chain = true)
 public class UpdateLastSeenAtInput {
     private List<Long> ids;
-    private LocalDateTime localDateTime;
+    private LocalDateTime lastSeenAt;
 }
