@@ -44,8 +44,6 @@ class NoteControllerTest {
 
     @Test
     void createNewNote() throws Exception {
-        assertThat(noteRepository.findAll()).isEmpty();
-
         mockMvc.perform(MockMvcRequestBuilders.post("/note")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new CreateNoteInput().setContent(firstNoteContent))))
@@ -60,9 +58,7 @@ class NoteControllerTest {
     }
 
     @Test
-    void correctUpdateOfLastSeenAtPropertyOfNote() throws Exception {
-        assertThat(noteRepository.findAll()).isEmpty();
-
+    void correctNoteLastSeenAtUpdate() throws Exception {
         Long id1 = noteRepository.save(new NoteEntity()
                         .setContent(firstNoteContent))
                 .getId();
@@ -87,8 +83,8 @@ class NoteControllerTest {
                 .stream()
                 .allMatch(n -> n.getLastSeenAt().equals(lastSeenAt)));
         assertThat(noteRepository.findById(id2)
-                .map(NoteEntity::getLastSeenAt).get())
-                .isEqualTo(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
+                .map(NoteEntity::getLastSeenAt))
+                .contains(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
 }

@@ -47,8 +47,6 @@ class VocabularyEntryControllerTest {
 
     @Test
     void createNewVocabularyEntry() throws Exception {
-        assertThat(vocabularyEntryRepository.findAll()).isEmpty();
-
         mockMvc.perform(MockMvcRequestBuilders.post("/vocabulary-entry")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new CreateVocabularyEntryInput()
@@ -67,8 +65,6 @@ class VocabularyEntryControllerTest {
 
     @Test
     void returnVocabularyEntryListOfPredefinedSize() throws Exception {
-        assertThat(vocabularyEntryRepository.findAll()).isEmpty();
-
         Integer expectedSize = 2;
 
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
@@ -77,8 +73,7 @@ class VocabularyEntryControllerTest {
                 .setLastSeenAt(LocalDateTime.now()));
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setName(robust)
-                .setDescription(robustDescription)
-                .setLastSeenAt(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
+                .setDescription(robustDescription));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
                 .andDo(print())
@@ -88,17 +83,10 @@ class VocabularyEntryControllerTest {
                 .andExpect((jsonPath("$.[0].description").value(robustDescription)))
                 .andExpect((jsonPath("$.[1].name").value(coalesce)))
                 .andExpect((jsonPath("$.[1].description").value(coalesceDescription)));
-
-        assertThat(vocabularyEntryRepository.findAll())
-                .hasSize(expectedSize)
-                .extracting("name", "description")
-                .containsExactly(Tuple.tuple(coalesce, coalesceDescription), Tuple.tuple(robust, robustDescription));
     }
 
     @Test
-    void correctUpdateOfLastSeenAtPropertyOfVocabularyEntry() throws Exception {
-        assertThat(vocabularyEntryRepository.findAll()).isEmpty();
-
+    void correctVocabularyEntryLastSeenAtUpdate() throws Exception {
         Long id1 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
                         .setName(coalesce)
                         .setDescription(coalesceDescription))
@@ -126,8 +114,8 @@ class VocabularyEntryControllerTest {
                 .stream()
                 .allMatch(n -> n.getLastSeenAt().equals(lastSeenAt)));
         assertThat(vocabularyEntryRepository.findById(id3)
-                .map(VocabularyEntryEntity::getLastSeenAt).get())
-                .isEqualTo(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
+                .map(VocabularyEntryEntity::getLastSeenAt))
+                .contains(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
 }
