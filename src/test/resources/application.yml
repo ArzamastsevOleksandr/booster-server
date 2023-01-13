@@ -8,6 +8,8 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  liquibase:
+    change-log: db/changelog-master.xml
 
 logging:
   level:

@@ -39,6 +39,8 @@ class VocabularyEntryControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     VocabularyEntryRepository vocabularyEntryRepository;
+    @Autowired
+    WordRepository wordRepository;
 
     @BeforeEach
     void beforeEach() {
@@ -59,8 +61,10 @@ class VocabularyEntryControllerTest {
 
         assertThat(vocabularyEntryRepository.findAll())
                 .hasSize(1)
-                .extracting("name", "description", "lastSeenAt")
-                .containsExactly(Tuple.tuple(coalesce, coalesceDescription, LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
+                .extracting("word", "description", "lastSeenAt")
+                .containsExactly(Tuple.tuple(wordRepository.findByNameOrCreate(coalesce), coalesceDescription, LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN)));
+
+        assertThat(wordRepository.findByName(coalesce)).isNotEmpty();
     }
 
     @Test
@@ -68,11 +72,11 @@ class VocabularyEntryControllerTest {
         Integer expectedSize = 2;
 
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(coalesce)
+                .setWord(wordRepository.findByNameOrCreate(coalesce))
                 .setDescription(coalesceDescription)
                 .setLastSeenAt(LocalDateTime.now()));
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setName(robust)
+                .setWord(wordRepository.findByNameOrCreate(robust))
                 .setDescription(robustDescription));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
@@ -88,15 +92,15 @@ class VocabularyEntryControllerTest {
     @Test
     void correctVocabularyEntryLastSeenAtUpdate() throws Exception {
         Long id1 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                        .setName(coalesce)
+                        .setWord(wordRepository.findByNameOrCreate(coalesce))
                         .setDescription(coalesceDescription))
                 .getId();
         Long id2 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                        .setName(robust)
+                        .setWord(wordRepository.findByNameOrCreate(robust))
                         .setDescription(robustDescription))
                 .getId();
         Long id3 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                        .setName(contribution)
+                        .setWord(wordRepository.findByNameOrCreate(contribution))
                         .setDescription(contributionDescription))
                 .getId();
 
@@ -110,9 +114,10 @@ class VocabularyEntryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertTrue(vocabularyEntryRepository.findAllById(ids)
-                .stream()
-                .allMatch(n -> n.getLastSeenAt().equals(lastSeenAt)));
+        assertThat(vocabularyEntryRepository.findAllById(ids))
+                .extracting("lastSeenAt")
+                .allMatch(lastSeenAt::equals);
+
         assertThat(vocabularyEntryRepository.findById(id3)
                 .map(VocabularyEntryEntity::getLastSeenAt))
                 .contains(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
