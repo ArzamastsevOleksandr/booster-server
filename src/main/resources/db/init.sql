@@ -1,6 +1,5 @@
 -- todo: benchmark the sequence cache value
-CREATE SEQUENCE note_id_sequence
-    CACHE 50;
+CREATE SEQUENCE note_id_sequence CACHE 50;
 
 CREATE TABLE note
 (
@@ -12,6 +11,7 @@ CREATE TABLE note
 ALTER SEQUENCE note_id_sequence OWNED BY note.id;
 
 
+CREATE SEQUENCE vocabulary_entry_id_sequence CACHE 50;
 CREATE SEQUENCE word_id_sequence
     CACHE 50;
 
@@ -31,10 +31,11 @@ CREATE SEQUENCE vocabulary_entry_id_sequence
 
 CREATE TABLE vocabulary_entry
 (
-    id           BIGINT PRIMARY KEY DEFAULT nextval('vocabulary_entry_id_sequence'),
+    id                    BIGINT PRIMARY KEY                                  DEFAULT nextval('vocabulary_entry_id_sequence'),
     word_id      BIGINT NOT NULL,
-    description  TEXT,
-    last_seen_at TIMESTAMP
+    description           TEXT,
+    correct_answers_count INTEGER NOT NULL CHECK (correct_answers_count >= 0) DEFAULT 0,
+    last_seen_at          TIMESTAMP
 );
 
 ALTER SEQUENCE vocabulary_entry_id_sequence OWNED BY vocabulary_entry.id;

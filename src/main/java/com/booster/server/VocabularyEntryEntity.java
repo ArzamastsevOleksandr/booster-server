@@ -32,6 +32,7 @@ public class VocabularyEntryEntity {
     @ManyToOne
     private WordEntity word;
     private String description;
+    private Integer correctAnswersCount = 0;
     private LocalDateTime lastSeenAt = LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN);
 
     @Override

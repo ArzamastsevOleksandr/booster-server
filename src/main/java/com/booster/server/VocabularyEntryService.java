@@ -45,4 +45,17 @@ public class VocabularyEntryService {
         vocabularyEntryRepository.saveAll(vocabularyEntries);
     }
 
+    public void updateCorrectAnswersCount(UpdateCorrectAnswersCount input) {
+        Long id = input.getId();
+        VocabularyEntryEntity vocabularyEntry = vocabularyEntryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vocabulary entry with id=%s not found".formatted(id)));
+        Integer oldCount = vocabularyEntry.getCorrectAnswersCount();
+        if (input.getIsCorrect()) {
+            vocabularyEntry.setCorrectAnswersCount(++oldCount);
+        } else {
+            vocabularyEntry.setCorrectAnswersCount(oldCount == 0 ? 0 : --oldCount);
+        }
+        vocabularyEntryRepository.save(vocabularyEntry);
+    }
+
 }
