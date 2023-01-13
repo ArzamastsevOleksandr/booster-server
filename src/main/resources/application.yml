@@ -9,9 +9,11 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
-#    todo: find a better way of logging SQL
+      ddl-auto: none
+    # todo: find a better way of logging SQL
     show-sql: true
+  liquibase:
+    change-log: db/changelog-master.xml
 
 logging:
   level:
