@@ -5,7 +5,7 @@ The REST API exposing operations to interact with the `vocabulary entries` and `
 No concept of a user is supported for now, meaning that the system treats all requests as generic and does not differentiate between the requests issued by different users.
 
 ### To start the application locally:
-* Start the PostgreSQL DB by running the following command:
+* Start the PostgreSQL DB by running the following command from the project root:
 ```bash
 docker-compose up -d 
 ```
