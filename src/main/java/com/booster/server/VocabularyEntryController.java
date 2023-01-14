@@ -41,4 +41,12 @@ class VocabularyEntryController {
         log.debug("Request processed [input={}]", input);
     }
 
+    @PatchMapping(value = "correct-answer-count", produces = APPLICATION_JSON_VALUE)
+        // todo: add constraints
+    void updateCorrectAnswersCount(@RequestBody UpdateCorrectAnswersCountInput input) {
+        log.debug("Processing request [input={}]", input);
+        vocabularyEntryService.updateCorrectAnswersCount(input);
+        log.debug("Request processed [input={}]", input);
+    }
+
 }
