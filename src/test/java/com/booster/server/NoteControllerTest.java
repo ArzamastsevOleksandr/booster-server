@@ -87,4 +87,25 @@ class NoteControllerTest {
                 .contains(LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIN));
     }
 
+    @Test
+    void returnsBatchOfNotesWithRespectToLastSeenAt() throws Exception {
+        noteRepository.save(new NoteEntity()
+                .setContent(firstNoteContent)
+                .setLastSeenAt(LocalDateTime.now().minusHours(1)));
+        noteRepository.save(new NoteEntity()
+                .setContent(secondNoteContent));
+        noteRepository.save(new NoteEntity()
+                .setContent(thirdNoteContent)
+                .setLastSeenAt(LocalDateTime.now()));
+
+        Integer batchSize = 2;
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/note/list?size=%s".formatted(batchSize)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(batchSize))
+                .andExpect(jsonPath("$.[0].content").value(secondNoteContent))
+                .andExpect(jsonPath("$.[1].content").value(firstNoteContent));
+    }
+
 }
