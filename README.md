@@ -14,7 +14,7 @@ docker-compose up -d
 ./mvnw clean install && java -jar target/server-0.0.1-SNAPSHOT.jar
 ```
 
-**Important**. For now, all migration scripts are added into the `init.sql` directly and the concept of the migration changelog is not respected. This means that you might pull the latest changes affecting the `init.sql` checksum which prevents the app from starting. If this happens, simply recreate the DB by running the following command:
+**Important**. For now, all migration scripts are added into the `init.sql` directly and the concept of the migration changelog is not respected. This means that you might pull the latest changes affecting the `init.sql` checksum which prevents the app from starting. If this happens, simply recreate the DB by running the following command from the project root:
 ```bash
 docker-compose down && docker-compose up -d
 ```
