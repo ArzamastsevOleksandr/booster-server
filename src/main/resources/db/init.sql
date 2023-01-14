@@ -28,10 +28,10 @@ CREATE SEQUENCE vocabulary_entry_id_sequence CACHE 50;
 
 CREATE TABLE vocabulary_entry
 (
-    id                    BIGINT PRIMARY KEY                                  DEFAULT nextval('vocabulary_entry_id_sequence'),
+    id                    BIGINT PRIMARY KEY DEFAULT nextval('vocabulary_entry_id_sequence'),
     word_id               BIGINT  NOT NULL,
     description           TEXT,
-    correct_answers_count INTEGER NOT NULL CHECK (correct_answers_count >= 0) DEFAULT 0,
+    correct_answers_count INTEGER NOT NULL   DEFAULT 0,
     last_seen_at          TIMESTAMP
 );
 
@@ -39,3 +39,6 @@ ALTER SEQUENCE vocabulary_entry_id_sequence OWNED BY vocabulary_entry.id;
 
 ALTER TABLE vocabulary_entry
     ADD CONSTRAINT vocabulary_entry__word_id__fk FOREIGN KEY (word_id) REFERENCES word (id);
+
+ALTER TABLE vocabulary_entry
+    ADD CONSTRAINT correct_answers_count_check CHECK (correct_answers_count >= 0);
