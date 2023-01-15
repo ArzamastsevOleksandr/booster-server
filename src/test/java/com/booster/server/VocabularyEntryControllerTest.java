@@ -76,9 +76,7 @@ class VocabularyEntryControllerTest {
     }
 
     @Test
-    void returnVocabularyEntryListOfPredefinedSize() throws Exception {
-        Integer expectedSize = 2;
-
+    void returnsBatchOfVocabularyEntriesWithRespectToLastSeenAt() throws Exception {
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setWord(wordRepository.findByNameOrCreate(coalesce))
                 .setDescription(coalesceDescription)
@@ -87,10 +85,12 @@ class VocabularyEntryControllerTest {
                 .setWord(wordRepository.findByNameOrCreate(robust))
                 .setDescription(robustDescription));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(expectedSize)))
+        Integer batchSize = 2;
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/vocabulary-entry/list?size=%s".formatted(batchSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(expectedSize))
+                .andExpect(jsonPath("$.length()").value(batchSize))
                 .andExpect((jsonPath("$.[0].name").value(robust)))
                 .andExpect((jsonPath("$.[0].description").value(robustDescription)))
                 .andExpect((jsonPath("$.[1].name").value(coalesce)))

@@ -18,8 +18,10 @@ public class NoteService {
         var noteEntity = new NoteEntity();
         noteEntity.setContent(input.getContent());
 
-        noteEntity = noteRepository.save(noteEntity);
+        return noteDto(noteRepository.save(noteEntity));
+    }
 
+    private NoteDto noteDto(NoteEntity noteEntity) {
         return new NoteDto()
                 .setContent(noteEntity.getContent());
     }
@@ -29,6 +31,14 @@ public class NoteService {
         List<NoteEntity> notes = noteRepository.findAllById(input.getIds());
         notes.forEach(note -> note.setLastSeenAt(input.getLastSeenAt()));
         noteRepository.saveAll(notes);
+    }
+
+    // todo: research returning a stream from the DB and how performant it is
+    public List<NoteDto> batchOfSize(Integer size) {
+        return noteRepository.findBatch(size)
+                .stream()
+                .map(this::noteDto)
+                .toList();
     }
 
 }
