@@ -76,7 +76,7 @@ class VocabularyEntryControllerTest {
     }
 
     @Test
-    void returnBatchOfVocabularyEntriesWithRespectToLastSeenAt() throws Exception {
+    void returnsBatchOfVocabularyEntriesWithRespectToLastSeenAt() throws Exception {
         vocabularyEntryRepository.save(new VocabularyEntryEntity()
                 .setWord(wordRepository.findByNameOrCreate(coalesce))
                 .setDescription(coalesceDescription)
