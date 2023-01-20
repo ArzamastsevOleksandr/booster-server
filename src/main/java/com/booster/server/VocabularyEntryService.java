@@ -34,6 +34,7 @@ public class VocabularyEntryService {
 
     private VocabularyEntryDto vocabularyEntryDto(VocabularyEntryEntity entity) {
         return new VocabularyEntryDto()
+                .setId(entity.getId())
                 .setName(entity.getWord().getName())
                 .setDescription(entity.getDescription());
     }

@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ToString
 public class VocabularyEntryDto {
+    private Long id;
     private String name;
     private String description;
 }

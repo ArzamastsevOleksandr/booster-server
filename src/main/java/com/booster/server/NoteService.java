@@ -23,6 +23,7 @@ public class NoteService {
 
     private NoteDto noteDto(NoteEntity noteEntity) {
         return new NoteDto()
+                .setId(noteEntity.getId())
                 .setContent(noteEntity.getContent());
     }
 
