@@ -49,6 +49,7 @@ class NoteControllerTest {
                         .content(objectMapper.writeValueAsString(new CreateNoteInput().setContent(firstNoteContent))))
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.content").value(firstNoteContent));
 
         assertThat(noteRepository.findAll())
@@ -89,11 +90,13 @@ class NoteControllerTest {
 
     @Test
     void returnsBatchOfNotesWithRespectToLastSeenAt() throws Exception {
-        noteRepository.save(new NoteEntity()
-                .setContent(firstNoteContent)
-                .setLastSeenAt(LocalDateTime.now().minusHours(1)));
-        noteRepository.save(new NoteEntity()
-                .setContent(secondNoteContent));
+        Long id1 = noteRepository.save(new NoteEntity()
+                        .setContent(firstNoteContent)
+                        .setLastSeenAt(LocalDateTime.now().minusHours(1)))
+                .getId();
+        Long id2 = noteRepository.save(new NoteEntity()
+                        .setContent(secondNoteContent))
+                .getId();
         noteRepository.save(new NoteEntity()
                 .setContent(thirdNoteContent)
                 .setLastSeenAt(LocalDateTime.now()));
@@ -104,7 +107,9 @@ class NoteControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(batchSize))
+                .andExpect(jsonPath("$.[0].id").value(id2))
                 .andExpect(jsonPath("$.[0].content").value(secondNoteContent))
+                .andExpect(jsonPath("$.[1].id").value(id1))
                 .andExpect(jsonPath("$.[1].content").value(firstNoteContent));
     }
 

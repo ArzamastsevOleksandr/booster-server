@@ -59,6 +59,7 @@ class VocabularyEntryControllerTest {
                                 .setDescription(coalesceDescription))))
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").value(coalesce))
                 .andExpect(jsonPath("$.description").value(coalesceDescription));
 
@@ -77,13 +78,15 @@ class VocabularyEntryControllerTest {
 
     @Test
     void returnsBatchOfVocabularyEntriesWithRespectToLastSeenAt() throws Exception {
-        vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setWord(wordRepository.findByNameOrCreate(coalesce))
-                .setDescription(coalesceDescription)
-                .setLastSeenAt(LocalDateTime.now()));
-        vocabularyEntryRepository.save(new VocabularyEntryEntity()
-                .setWord(wordRepository.findByNameOrCreate(robust))
-                .setDescription(robustDescription));
+        Long id1 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                        .setWord(wordRepository.findByNameOrCreate(coalesce))
+                        .setDescription(coalesceDescription)
+                        .setLastSeenAt(LocalDateTime.now()))
+                .getId();
+        Long id2 = vocabularyEntryRepository.save(new VocabularyEntryEntity()
+                        .setWord(wordRepository.findByNameOrCreate(robust))
+                        .setDescription(robustDescription))
+                .getId();
 
         Integer batchSize = 2;
 
@@ -91,8 +94,10 @@ class VocabularyEntryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(batchSize))
+                .andExpect((jsonPath("$.[0].id").value(id2)))
                 .andExpect((jsonPath("$.[0].name").value(robust)))
                 .andExpect((jsonPath("$.[0].description").value(robustDescription)))
+                .andExpect((jsonPath("$.[1].id").value(id1)))
                 .andExpect((jsonPath("$.[1].name").value(coalesce)))
                 .andExpect((jsonPath("$.[1].description").value(coalesceDescription)));
     }
