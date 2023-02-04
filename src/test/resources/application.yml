@@ -13,4 +13,4 @@ spring:
 
 logging:
   level:
-    com.booster.server: DEBUG
+    com.booster.server: TRACE
