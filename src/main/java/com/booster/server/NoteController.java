@@ -41,4 +41,10 @@ class NoteController {
         return noteService.batchOfSize(size);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteById(@PathVariable Long id) {
+        noteService.deleteById(id);
+    }
+
 }

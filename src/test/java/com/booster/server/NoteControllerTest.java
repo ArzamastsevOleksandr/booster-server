@@ -113,4 +113,38 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$.[1].content").value(firstNoteContent));
     }
 
+    @Test
+    void deletesById() throws Exception {
+        Long id1 = noteRepository.save(new NoteEntity()
+                        .setContent(firstNoteContent))
+                .getId();
+        Long id2 = noteRepository.save(new NoteEntity()
+                        .setContent(secondNoteContent))
+                .getId();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/note/{id}", id1))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        assertThat(noteRepository.findById(id1)).isEmpty();
+        assertThat(noteRepository.findById(id2)).isNotEmpty();
+    }
+
+    @Test
+    void failsToDeleteById() throws Exception {
+        Long id1 = noteRepository.save(new NoteEntity()
+                        .setContent(firstNoteContent))
+                .getId();
+
+        int missingId = 1000;
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/note/{id}", missingId))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Entity not found [type=%s, notFoundBy=%s, attributeValue=%s]"
+                        .formatted(NoteEntity.class.getSimpleName(), "id", missingId)));
+
+        assertThat(noteRepository.findById(id1)).isNotEmpty();
+    }
+
 }

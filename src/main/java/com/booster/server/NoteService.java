@@ -1,6 +1,7 @@
 package com.booster.server;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,15 @@ public class NoteService {
                 .stream()
                 .map(this::noteDto)
                 .toList();
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        try {
+            noteRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException(NoteEntity.class, "id", id);
+        }
     }
 
 }
