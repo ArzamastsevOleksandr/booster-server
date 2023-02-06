@@ -19,3 +19,8 @@ docker-compose up -d
 docker-compose down && docker-compose up -d
 ```
 This is acceptable for development only. Once the app is mature enough - the correct approach of migration scripts will be used, and new DB changes will be located in the new `.sql` files.
+
+To run all tests execute the following command from the project root:
+```bash
+./mvnw clean test
+```

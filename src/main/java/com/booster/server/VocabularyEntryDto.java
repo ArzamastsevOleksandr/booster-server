@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -15,5 +15,5 @@ public class VocabularyEntryDto {
     private Long id;
     private String name;
     private String description;
-    private Set<String> synonyms;
+    private Collection<String> synonyms;
 }
