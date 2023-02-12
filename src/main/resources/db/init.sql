@@ -42,3 +42,21 @@ ALTER TABLE vocabulary_entry
 
 ALTER TABLE vocabulary_entry
     ADD CONSTRAINT correct_answers_count_check CHECK (correct_answers_count >= 0);
+
+CREATE TABLE vocabulary_entry_synonym
+(
+    vocabulary_entry_id BIGINT,
+    word_id             BIGINT
+);
+
+ALTER TABLE vocabulary_entry_synonym
+    ADD CONSTRAINT vocabulary_entry_synonym__pk PRIMARY KEY (vocabulary_entry_id, word_id);
+
+ALTER TABLE vocabulary_entry_synonym
+    ADD CONSTRAINT vocabulary_entry_id__vocabulary_entry__fk
+        FOREIGN KEY (vocabulary_entry_id) REFERENCES vocabulary_entry (id);
+
+ALTER TABLE vocabulary_entry_synonym
+    ADD CONSTRAINT word_id__word__fk
+        FOREIGN KEY (word_id) REFERENCES word (id);
+
