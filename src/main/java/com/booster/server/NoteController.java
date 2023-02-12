@@ -28,6 +28,7 @@ class NoteController {
     }
 
     @PatchMapping(produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
         // todo: add constraints
     void updateLastSeenAt(@RequestBody UpdateLastSeenAtInput input) {
         log.debug("Processing request [input={}]", input);

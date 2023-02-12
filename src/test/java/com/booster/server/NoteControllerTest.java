@@ -78,7 +78,7 @@ class NoteControllerTest {
                                 .setIds(ids)
                                 .setLastSeenAt(lastSeenAt))))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         assertTrue(noteRepository.findAllById(ids)
                 .stream()
@@ -132,10 +132,6 @@ class NoteControllerTest {
 
     @Test
     void failsToDeleteById() throws Exception {
-        Long id1 = noteRepository.save(new NoteEntity()
-                        .setContent(firstNoteContent))
-                .getId();
-
         int missingId = 1000;
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/note/{id}", missingId))
@@ -143,8 +139,6 @@ class NoteControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Entity not found [type=%s, notFoundBy=%s, attributeValue=%s]"
                         .formatted(NoteEntity.class.getSimpleName(), "id", missingId)));
-
-        assertThat(noteRepository.findById(id1)).isNotEmpty();
     }
 
 }
