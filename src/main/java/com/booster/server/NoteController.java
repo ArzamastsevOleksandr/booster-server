@@ -28,6 +28,7 @@ class NoteController {
     }
 
     @PatchMapping(produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
         // todo: add constraints
     void updateLastSeenAt(@RequestBody UpdateLastSeenAtInput input) {
         log.debug("Processing request [input={}]", input);
@@ -39,6 +40,12 @@ class NoteController {
         // todo: add constraints
     List<NoteDto> list(@RequestParam Integer size) {
         return noteService.batchOfSize(size);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteById(@PathVariable Long id) {
+        noteService.deleteById(id);
     }
 
 }
