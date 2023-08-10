@@ -48,6 +48,7 @@ public class NoteService {
         try {
             noteRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
+            // todo: log a warn and move on?
             throw new EntityNotFoundException(NoteEntity.class, "id", id);
         }
     }

@@ -30,8 +30,8 @@ import java.util.Set;
 public class VocabularyEntryEntity {
 
     @Id
-    @SequenceGenerator(name = "vocabulary_entry_id_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vocabulary_entry_id_sequence")
+    @SequenceGenerator(name = "vocabulary_entry__id__sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vocabulary_entry__id__sequence")
     private Long id;
 
     @ManyToOne

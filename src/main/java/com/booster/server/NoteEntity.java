@@ -24,8 +24,8 @@ import java.util.Objects;
 public class NoteEntity {
 
     @Id
-    @SequenceGenerator(name = "note_id_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "note_id_sequence")
+    @SequenceGenerator(name = "note__id__sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "note__id__sequence")
     private Long id;
 
     private String content;

@@ -9,7 +9,12 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface NoteRepository extends JpaRepository<NoteEntity, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT * FROM note n ORDER BY n.last_seen_at LIMIT :size")
+    @Query(nativeQuery = true, value = """
+            SELECT *
+            FROM note n
+            ORDER BY n.last_seen_at
+            LIMIT :size
+            """)
     List<NoteEntity> findBatch(Integer size);
 
 }

@@ -21,8 +21,8 @@ import java.util.Objects;
 public class WordEntity {
 
     @Id
-    @SequenceGenerator(name = "word_id_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "word_id_sequence")
+    @SequenceGenerator(name = "word__id__sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "word__id__sequence")
     private Long id;
 
     private String name;

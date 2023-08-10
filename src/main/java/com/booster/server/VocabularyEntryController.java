@@ -29,7 +29,7 @@ class VocabularyEntryController {
 
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
         // todo: add constraints
-    List<VocabularyEntryDto> list(@RequestParam Integer size) {
+    List<VocabularyEntryDto> list(@RequestParam(defaultValue = "10") Integer size) {
         return vocabularyEntryService.batchOfSize(size);
     }
 
