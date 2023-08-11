@@ -9,7 +9,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     # todo: find a better way of logging SQL
     show-sql: true
   liquibase:
